@@ -28,10 +28,10 @@ const ExponentLawsLevel1: React.FC<LevelComponentProps> = ({ onComplete, onExit,
   const [showSimp, setShowSimp] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  // Update progress to have 2 tasks total
+  // Update progress to have 1 task total
   useEffect(() => {
-    onProgressUpdate?.(showSimp ? 2 : 1, 2);
-  }, [showSimp, onProgressUpdate]);
+    onProgressUpdate?.(1, 1);
+  }, [onProgressUpdate]);
 
   useEffect(() => {
     if (partialProgress?.jumpToIndex) {
@@ -51,7 +51,7 @@ const ExponentLawsLevel1: React.FC<LevelComponentProps> = ({ onComplete, onExit,
         setShowSimp(true);
         setFeedback(null);
     } else {
-        setFeedback("Check the expansion!");
+        setFeedback("Try again! The exponent shows repeated multiplication.");
     }
   };
 
@@ -79,10 +79,9 @@ const ExponentLawsLevel1: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     <DndProvider backend={backend}>
       <div className="flex flex-col items-center min-h-full p-8 text-white max-w-5xl mx-auto pb-24 text-xl">
         <InstructionButton onClick={() => {}} />
-        <h1 className="text-3xl font-bold text-sky-400 mb-8 uppercase">Expanding Exponents</h1>
         <div className="w-full bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-2xl space-y-10">
-           <p className="text-center italic">Drag and drop the purple boxes into the correct dotted box.</p>
-           <div className="flex justify-center gap-6"><ExpansionTile value="x2_expand" content="(x ⋅ x)" /><ExpansionTile value="x3_expand" content="(x ⋅ x ⋅ x)" /></div>
+           <p className="text-center">{showSimp ? "Now, rewrite your expanded multiplication as a power of x." : "Match each purple box with its correct expanded form. Drag it to the right dotted box."}</p>
+           {!showSimp && <div className="flex justify-center gap-6"><ExpansionTile value="x2_expand" content="(x ⋅ x)" /><ExpansionTile value="x3_expand" content="(x ⋅ x ⋅ x)" /></div>}
            <div className="space-y-12">
              <div className="flex items-center justify-center gap-4">
                 <span className="font-mono text-2xl">(x²)(x³) =</span>
@@ -96,7 +95,7 @@ const ExponentLawsLevel1: React.FC<LevelComponentProps> = ({ onComplete, onExit,
                 {showSimp && <><span className="text-2xl">=</span><input value={simpB} onChange={e=>setSimpB(e.target.value)} className="w-24 bg-black border-b-2 border-sky-400 text-center" placeholder="x^?" /></>}
              </div>
            </div>
-           <button onClick={showSimp ? () => {if(simpA.toLowerCase().replace(/\s/g,'')==='x^5'&&simpB.toLowerCase().replace(/\s/g,'')==='x^6'){onComplete(3); setPhase(2);}else setFeedback("Check your simplified forms!");} : checkExp} className="block mx-auto bg-sky-600 px-12 py-4 rounded-xl font-bold text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95">{showSimp?'Check Result':'Check Expansion'}</button>
+           <button onClick={showSimp ? () => {if(simpA.toLowerCase().replace(/\s/g,'')==='x^5'&&simpB.toLowerCase().replace(/\s/g,'')==='x^6'){onComplete(3); setPhase(2);}else setFeedback("How many x's are multiplied altogether?");} : checkExp} className="block mx-auto bg-sky-600 px-12 py-4 rounded-xl font-bold text-2xl shadow-lg transition-transform hover:scale-105 active:scale-95">Check</button>
         </div>
         {feedback && <p className="mt-6 text-amber-400 font-bold animate-bounce text-center">{feedback}</p>}
       </div>

@@ -45,7 +45,6 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
       p1: { a: getRandomInt(2, 5), b: getRandomInt(1, 6), var: 'm' },
       p2: { a: getRandomInt(3, 5), b: getRandomInt(1, 5), var: 't' },
       p3: { a: p3A, b: p3B, var: 'x' },
-      p4: { a: getRandomInt(2, 4), b: getRandomInt(3, 6), var: 'y' },
       p5: { a: getRandomInt(2, 5), b: getRandomInt(2, 5), var: p5Var },
       p6: { a: getRandomInt(2, 5), b: getRandomInt(2, 5), var: p6Var },
       p7: { 
@@ -54,7 +53,6 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
         var: 'x', 
         distractors: [
           `${p7A}x + ${p7B}`,           // Mistake: forgot to distribute
-          `${p7A}m + ${p7A * p7B}`,     // Mistake: wrong variable
           `${p7A}(x + ${p7B + 2})`      // Mistake: wrong constant
         ]
       }
@@ -76,13 +74,13 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
   const isCompletedRef = useRef(false);
 
   useEffect(() => {
-    onProgressUpdate?.(phase, 7);
+    onProgressUpdate?.(phase, 6);
   }, [phase, onProgressUpdate]);
 
   useEffect(() => {
     if (partialProgress?.jumpToIndex) {
       const idx = partialProgress.jumpToIndex;
-      if (idx >= 1 && idx <= 7) {
+      if (idx >= 1 && idx <= 6) {
         setPhase(idx);
         setPlacedTiles([]);
         setInputText("");
@@ -120,7 +118,17 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     } else {
       setErrorCount(e => e + 1);
       setFeedbackType('hint');
-      setFeedback("Try again! Check the number of tiles.");
+      
+      // Phase-specific hints
+      if (phase === 1) {
+        setFeedback("Try again! How many m-tiles and 1-tiles do we need?");
+      } else if (phase === 2) {
+        setFeedback("Try again! How many t-tiles and -1-tiles do we need?");
+      } else if (phase === 3) {
+        setFeedback(`Try again! We have ${params.p3.a} groups of (${params.p3.var} + ${params.p3.b}). How many ${params.p3.var}-tiles and 1-tiles do we need in total?`);
+      } else {
+        setFeedback("Try again! Check the number of tiles.");
+      }
     }
   };
 
@@ -129,7 +137,7 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
       setFeedbackType('success');
       setFeedback("Correct!");
       setTimeout(() => { 
-        if (phase < 7) {
+        if (phase < 6) {
           setPhase(p => p + 1); setInputText(""); setFeedback(null); setFeedbackType(null);
         } else {
           isCompletedRef.current = true;
@@ -139,7 +147,15 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     } else {
       setErrorCount(e => e + 1);
       setFeedbackType('hint');
-      setFeedback("Check the total number of variable tiles and unit tiles.");
+      
+      // Phase-specific hints
+      if (phase === 4) {
+        setFeedback(`Try again! How many ${params.p5.var}-tiles and 1-tiles do we have in total?`);
+      } else if (phase === 5) {
+        setFeedback(`Try again! How many ${params.p6.var}-tiles and 1-tiles do we have in total?`);
+      } else {
+        setFeedback("Check the total number of variable tiles and unit tiles.");
+      }
     }
   };
 
@@ -175,7 +191,7 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
       if (selectedOptions.length !== 2) {
         setFeedback("Choose exactly TWO correct expressions.");
       } else {
-        setFeedback("Check your groups. One or more choices doesn't match the model's structure.");
+        setFeedback("Try again! Check the total number of x-tiles and 1-tiles.");
       }
     }
   };
@@ -193,13 +209,6 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     setErrorCount(0);
     setHintCount(0);
     setShowCompletion(false);
-  };
-
-  const togglePhase4Hint = () => {
-    if (!showHint) {
-      setHintCount(prev => prev + 1);
-    }
-    setShowHint(!showHint);
   };
 
   if (showCompletion) {
@@ -269,43 +278,7 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
 
         {phase === 4 && (
           <div className="space-y-8 text-center animate-fade-in">
-            <div className="relative inline-block mx-auto">
-              <h2 className="text-2xl font-bold">
-                Click the tiles to represent <span className="text-amber-400 font-bold">{params.p4.var}({params.p4.a}{params.p4.var} + {params.p4.b})</span>
-                <button 
-                  onClick={togglePhase4Hint}
-                  className={`ml-4 p-2 rounded-full transition-all ${showHint ? 'bg-yellow-500/40 text-yellow-200' : 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'}`}
-                  aria-label="Hint"
-                  title="Hint"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                </button>
-              </h2>
-            </div>
-
-            {showHint && (
-              <div className="max-w-lg mx-auto bg-amber-950/30 border border-amber-500/50 rounded-2xl p-4 text-amber-300 text-sm animate-fade-in-up">
-                Think about what happens when you multiply <span className="italic">{params.p4.var}</span> by each term inside the parentheses. 
-                Remember: <span className="font-mono">{params.p4.var} ⋅ {params.p4.var} = {params.p4.var}²</span>. So, <span className="italic">{params.p4.var}</span> groups of <span className="italic">{params.p4.a}{params.p4.var}</span> results in <span className="font-bold">{params.p4.a}{params.p4.var}²</span>.
-              </div>
-            )}
-
-            <div className="flex justify-center gap-8 bg-slate-800 p-6 rounded-2xl">
-              <button onClick={() => addTile('v2')} aria-label={`Add ${params.p4.var} squared tile`}><SquareUnit label={`${params.p4.var}²`} color="bg-rose-500" /></button>
-              <button onClick={() => addTile('v')} aria-label={`Add ${params.p4.var} tile`}><RectTile label={params.p4.var} /></button>
-            </div>
-            <div className="min-h-[250px] bg-slate-800/50 border-4 border-dashed border-slate-700 rounded-2xl p-6 flex flex-wrap gap-4 content-start">
-              {placedTiles.map(t => <div key={t.id} onClick={() => removeTile(t.id)} className="cursor-pointer hover:opacity-50">{t.type === 'v2' ? <SquareUnit label={`${params.p4.var}²`} color="bg-rose-500" /> : <RectTile label={params.p4.var} />}</div>)}
-            </div>
-            <button onClick={() => checkRep({v2: params.p4.a, v: params.p4.b})} className="bg-sky-600 px-12 py-3 rounded-xl font-bold hover:bg-sky-500 transition-colors">Check</button>
-          </div>
-        )}
-
-        {phase === 5 && (
-          <div className="space-y-8 text-center animate-fade-in">
-            <h2 className="text-2xl font-bold">Determine an algebraic expression that represents the pattern shown below:</h2>
+            <h2 className="text-2xl font-bold">Write an algebraic expression that represents the pattern shown below.</h2>
             <div className="bg-slate-800 p-10 rounded-2xl flex flex-wrap justify-center gap-6">
               {[...Array(params.p5.a)].map((_, i) => <ParallelogramR key={`p5v-${i}`} label={params.p5.var} />)}
               {[...Array(params.p5.b)].map((_, i) => <DiamondUnit key={`p5u-${i}`} />)}
@@ -315,9 +288,9 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
           </div>
         )}
 
-        {phase === 6 && (
+        {phase === 5 && (
           <div className="space-y-8 text-center animate-fade-in">
-            <h2 className="text-2xl font-bold">Determine an algebraic expression that represents the pattern shown below:</h2>
+            <h2 className="text-2xl font-bold">Write an algebraic expression that represents the pattern shown below.</h2>
             <div className="bg-slate-800 p-10 rounded-2xl flex flex-wrap justify-center gap-6">
               {[...Array(params.p6.a)].map((_, i) => <RectTile key={`p6v-${i}`} label={params.p6.var} />)}
               {[...Array(params.p6.b)].map((_, i) => <SquareUnit key={`p6u-${i}`} label="1" />)}
@@ -327,7 +300,7 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
           </div>
         )}
 
-        {phase === 7 && (
+        {phase === 6 && (
           <div className="space-y-8 text-center animate-fade-in">
             <h2 className="text-2xl font-bold">Select TWO expressions that represent the pattern below:</h2>
             <div className="bg-slate-800 p-10 rounded-2xl flex flex-wrap justify-center gap-6">
@@ -369,7 +342,7 @@ const AlgebraTilesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
               onClick={handleFinish} 
               className="bg-emerald-600 hover:bg-emerald-500 px-12 py-4 rounded-xl font-bold text-2xl shadow-xl transition-all transform hover:scale-105 active:scale-95"
             >
-              Finish
+              Check
             </button>
           </div>
         )}

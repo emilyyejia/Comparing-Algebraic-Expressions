@@ -206,36 +206,36 @@ const AlgebraTilesLevel1: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     if (task === 1) {
       const ok = p1Counts.x === params.t1.a && p1Counts.unit_neg === params.t1.c && p1Counts.x2 === 0;
       if (ok) { setIsCorrect(true); setFeedback("Excellent! Task complete."); }
-      else { setErrorCount(prev => prev + 1); setFeedback("Check your tiles."); }
+      else { setErrorCount(prev => prev + 1); setFeedback("Try again! How many x‑tiles and −1-tiles do we need?"); }
     } else if (task === 2) {
       const ok = p1Counts.x2 === params.t2.b && p1Counts.x === params.t2.a && p1Counts.unit_neg === params.t2.c;
       if (ok) { setIsCorrect(true); setFeedback("Excellent! Task complete."); }
-      else { setErrorCount(prev => prev + 1); setFeedback("Check your tiles."); }
+      else { setErrorCount(prev => prev + 1); setFeedback("Try again! How many x²‑tiles, x-tiles, and −1-tiles do we need?"); }
     } else if (task === 3) {
       const isCorrectModel = (g: TileType[]) => g.filter(t => t === 'n').length === 1 && g.filter(t => t === 'unit_pos').length === params.t3.k && g.length === (1 + params.t3.k);
       const modelOk = isCorrectModel(p2Groups.A) && isCorrectModel(p2Groups.B) && isCorrectModel(p2Groups.C);
       
       if (subStep === 1) {
         if (modelOk) { setSubStep(2); setFeedback("Model correct! Now simplify the expression."); }
-        else { setErrorCount(prev => prev + 1); setFeedback(`Each group needs 1 n-tile and ${params.t3.k} units.`); }
+        else { setErrorCount(prev => prev + 1); setFeedback(`Try again! How many n-tiles and 1-tiles do we need for each group?`); }
       } else {
         const norm = p2ExtraAns.replace(/\s/g, '').toLowerCase();
         const expected = `3n+${3 * params.t3.k}`;
         if (norm === expected) { setIsCorrect(true); setFeedback("Excellent! Task complete."); }
-        else { setErrorCount(prev => prev + 1); setFeedback(`Count the total tiles: 3 n-tiles and ${3 * params.t3.k} units.`); }
+        else { setErrorCount(prev => prev + 1); setFeedback(`Try again! Count the total number of n-tiles and 1-tiles.`); }
       }
     } else if (task === 4) {
       const isCorrectModel = (g: TileType[]) => g.filter(t => t === 'y').length === 1 && g.filter(t => t === 'unit_pos').length === params.t4.k && g.length === (1 + params.t4.k);
       const modelOk = isCorrectModel(p3Groups.A) && isCorrectModel(p3Groups.B);
       
       if (subStep === 1) {
-        if (modelOk) { setSubStep(2); setFeedback("Model correct! Now simplify the expression."); }
-        else { setErrorCount(prev => prev + 1); setFeedback(`Each group needs 1 y-tile and ${params.t4.k} unit${params.t4.k > 1 ? 's' : ''}.`); }
+        if (modelOk) { setSubStep(2); setFeedback("Great job!"); }
+        else { setErrorCount(prev => prev + 1); setFeedback(`Try again! How many y-tiles and 1-tiles do we need for each group?`); }
       } else {
         const norm = p3ExtraAns.replace(/\s/g, '').toLowerCase();
         const expected = `2y+${2 * params.t4.k}`;
         if (norm === expected) { setIsCorrect(true); setFeedback("Excellent! Task complete."); }
-        else { setErrorCount(prev => prev + 1); setFeedback(`Simplify 2(y + ${params.t4.k}). How many total tiles?`); }
+        else { setErrorCount(prev => prev + 1); setFeedback(`Try again! Count the total number of y-tiles and 1-tiles.`); }
       }
     }
   };
@@ -277,11 +277,11 @@ const AlgebraTilesLevel1: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     <>Drag tiles to represent <span className="text-amber-400 font-bold">{params.t1.a}x - {params.t1.c}</span></>,
     <>Drag tiles to represent <span className="text-amber-400 font-bold">{params.t2.b}x² + {params.t2.a}x - {params.t2.c}</span></>,
     subStep === 1 
-      ? <>Make 3 groups of <span className="text-amber-400 font-bold">n + {params.t3.k}</span></>
-      : <>Now, simplify the total expression <span className="text-amber-400 font-bold">3(n + {params.t3.k})</span></>,
+      ? <>Drag the tiles to make 3 groups of <span className="text-amber-400 font-bold">(n + {params.t3.k})</span></>
+      : <>Now, expand <span className="text-amber-400 font-bold">3(n + {params.t3.k})</span></>,
     subStep === 1
-      ? <>Make 2 groups of <span className="text-amber-400 font-bold">y + {params.t4.k}</span></>
-      : <>Now, simplify the total expression <span className="text-amber-400 font-bold">2(y + {params.t4.k})</span></>
+      ? <>Drag the tiles to make 2 groups of <span className="text-amber-400 font-bold">(y + {params.t4.k})</span></>
+      : <>Now, expand <span className="text-amber-400 font-bold">2(y + {params.t4.k})</span></>
   ];
 
   return (

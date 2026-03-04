@@ -114,7 +114,7 @@ const AlgebraTilesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
       }, 1500);
     } else {
       setErrorCount(e => e + 1);
-      setFeedback("Check your tiles again. Does it match the expression exactly?");
+      setFeedback("Try again!");
       setIsModelCorrect(false);
     }
   };
@@ -153,7 +153,7 @@ const AlgebraTilesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
       }, 1500);
     } else {
       setErrorCount(e => e + 1);
-      setFeedback("Observe the scale tilt carefully. Which side is lower?");
+      setFeedback("Try again!");
     }
   };
 
@@ -194,7 +194,7 @@ const AlgebraTilesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
         
         <h2 className="text-2xl font-bold text-center mb-10 min-h-[3rem] animate-fade-in">
           {subStep === 'build' 
-            ? "Add algebraic tiles to represent the expressions shown on each side of the scale."
+            ? "Add algebra tiles to represent the expressions shown on each side of the scale."
             : "The model is built! Now compare the weights."}
         </h2>
         
@@ -231,8 +231,8 @@ const AlgebraTilesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
           </div>
         )}
 
-        <div className="w-full flex justify-around items-center h-[320px] relative mb-12 bg-slate-800/40 rounded-[3rem] border border-slate-700 shadow-inner overflow-hidden">
-          <div className="absolute bottom-0 w-32 h-64 bg-slate-800 border-x-4 border-t-4 border-slate-700 rounded-t-3xl" />
+        <div className="w-full flex justify-around items-center h-[400px] relative mb-12 bg-slate-800/40 rounded-[3rem] border border-slate-700 shadow-inner overflow-hidden">
+          <div className="absolute bottom-0 w-32 h-80 bg-slate-800 border-x-4 border-t-4 border-slate-700 rounded-t-3xl" />
           <div className={`flex justify-between w-full px-24 transition-transform duration-1000 ease-in-out`} style={{ transform: `rotate(${tiltAngle}deg)` }}>
             <div className="flex flex-col items-center gap-4">
                <div className={`min-w-[200px] min-h-[140px] bg-slate-800/80 border-4 ${subStep === 'analyze' ? 'border-sky-500/50' : 'border-slate-600'} rounded-3xl p-4 flex flex-wrap gap-1 items-start content-start shadow-inner transition-colors`}>
@@ -276,7 +276,7 @@ const AlgebraTilesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
                 onClick={checkModel} 
                 className="w-full max-w-sm bg-sky-600 hover:bg-sky-500 py-5 rounded-2xl font-black text-2xl transition-all shadow-xl hover:scale-105 active:scale-95"
               >
-                Check Model
+                Check
               </button>
             </div>
           ) : (
@@ -302,7 +302,7 @@ const AlgebraTilesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
                 disabled={!selectedAnswer} 
                 className="w-full bg-emerald-600 hover:bg-emerald-500 py-5 rounded-2xl font-black text-2xl disabled:opacity-50 transition-all shadow-xl hover:scale-105 active:scale-95 mt-4"
                >
-                 Submit Answer
+                 Check
                </button>
             </div>
           )}

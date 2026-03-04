@@ -13,7 +13,11 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
   const [errorStatus, setErrorStatus] = useState<Record<string, boolean>>({});
   const [correctStatus, setCorrectStatus] = useState<Record<string, boolean>>({});
   const [errorCount, setErrorCount] = useState(0);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [isTableComplete, setIsTableComplete] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const isCompletedRef = useRef(false);
 
   // Initialize randomized parameters
@@ -59,7 +63,11 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
     }));
   }, [multiplier, constant]);
 
-  useEffect(() => { onProgressUpdate?.(currentRowIndex, X_VALUES.length); }, [currentRowIndex, onProgressUpdate]);
+  useEffect(() => { 
+    const total = X_VALUES.length + 2; // 7 rows + 2 questions
+    const current = isTableComplete ? X_VALUES.length + currentQuestion + 1 : currentRowIndex + 1;
+    onProgressUpdate?.(current, total); 
+  }, [currentRowIndex, isTableComplete, currentQuestion, onProgressUpdate]);
 
   const calculateStars = (errors: number) => {
     if (errors <= 2) return 3;
@@ -77,6 +85,9 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
     
     if (err1 || err2) {
       setErrorCount(prev => prev + 1);
+      setFeedback("Try again! Check your calculation.");
+    } else {
+      setFeedback(null);
     }
 
     setErrorStatus(p => ({ 
@@ -93,13 +104,60 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
     
     if (!err1 && !err2) {
       if (idx === X_VALUES.length - 1) {
-        const finalStars = calculateStars(errorCount);
-        isCompletedRef.current = true;
-        onComplete(finalStars);
-        setShowCompletion(true);
+        setIsTableComplete(true);
+        setFeedback(null);
+        setCurrentQuestion(0);
+        setSelectedAnswer(null);
       } else {
         setCurrentRowIndex(idx + 1);
       }
+    }
+  };
+
+  const handleAnswerQuestion = (answer: string) => {
+    setSelectedAnswer(answer);
+    
+    // Find intersection point
+    let intersectionX = null;
+    for (let i = 0; i < tableData.length; i++) {
+      if (tableData[i].y1 === tableData[i].y2) {
+        intersectionX = tableData[i].x;
+        break;
+      }
+    }
+    
+    // Question 1: For which value(s) of x are the two expressions equal?
+    let correctAnswer1 = 'D';
+    if (intersectionX === 1) correctAnswer1 = 'A';
+    else if (intersectionX === 3) correctAnswer1 = 'B';
+    else if (intersectionX === 0) correctAnswer1 = 'C';
+    
+    // Question 2: When is y = multiplier*x greater than y = x + constant?
+    let correctAnswer2 = 'D';
+    if (intersectionX !== null) {
+      correctAnswer2 = 'C'; // Greater when x > intersection
+    }
+    
+    const correctAnswers = [correctAnswer1, correctAnswer2];
+    
+    if (answer === correctAnswers[currentQuestion]) {
+      setFeedback(null);
+      if (currentQuestion < 1) {
+        setTimeout(() => {
+          setCurrentQuestion(1);
+          setSelectedAnswer(null);
+        }, 500);
+      } else {
+        setTimeout(() => {
+          const finalStars = calculateStars(errorCount);
+          isCompletedRef.current = true;
+          onComplete(finalStars);
+          setShowCompletion(true);
+        }, 500);
+      }
+    } else {
+      setErrorCount(prev => prev + 1);
+      setFeedback("Try again! Check the table.");
     }
   };
 
@@ -108,7 +166,11 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
     setErrorStatus({});
     setCorrectStatus({});
     setErrorCount(0);
+    setFeedback(null);
     setShowCompletion(false);
+    setIsTableComplete(false);
+    setCurrentQuestion(0);
+    setSelectedAnswer(null);
     isCompletedRef.current = false;
     randomizeParameters();
   };
@@ -131,7 +193,7 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
       <div className="w-full space-y-12 max-w-2xl mt-8">
         <div className="text-center mb-12">
            <h2 className="text-2xl font-bold text-slate-300 mb-4 leading-relaxed">
-             Tables of values help us compare two expressions. Substitute the <span className="text-sky-300 italic">x</span> values to find the values of <span className="text-sky-300 italic">y</span>.
+             For each <span className="text-sky-300">x</span>‑value, find the <span className="text-sky-300">y</span>‑value in both equations.
            </h2>
            <div className="h-1 bg-slate-800/50 w-full"></div>
         </div>
@@ -139,10 +201,10 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
         <div className="w-full bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl">
           <table className="w-full border-separate border-spacing-2">
             <thead>
-              <tr className="text-center text-xs uppercase tracking-widest text-slate-500">
-                <th className="p-4 bg-slate-800 rounded-xl text-sky-300 w-24">x</th>
-                <th className="p-4 bg-slate-800 rounded-xl text-fuchsia-400 italic">y = {multiplier}x</th>
-                <th className="p-4 bg-slate-800 rounded-xl text-emerald-400 italic">y = x + {constant}</th>
+              <tr className="text-center text-lg font-bold tracking-wide text-slate-300">
+                <th className="p-6 bg-slate-800 rounded-xl text-sky-300 w-24">x</th>
+                <th className="p-6 bg-slate-800 rounded-xl text-fuchsia-400">y = {multiplier}x</th>
+                <th className="p-6 bg-slate-800 rounded-xl text-emerald-400">y = x + {constant}</th>
                 <th className="w-24"></th>
               </tr>
             </thead>
@@ -211,7 +273,120 @@ const TableOfValuesLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit
               })}
             </tbody>
           </table>
+          
+          {feedback && !isTableComplete && (
+            <div className="mt-6 text-center font-bold text-yellow-400 text-xl">
+              {feedback}
+            </div>
+          )}
         </div>
+
+        {/* Task 7: Questions after table completion */}
+        {isTableComplete && (
+          <div className="w-full bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl animate-fade-in">
+            <h3 className="text-2xl font-bold text-white mb-8">
+              {currentQuestion === 0 
+                ? "Using the table of values, for which value(s) of x are the two expressions equal?"
+                : `Using the table of values, when is y = ${multiplier}x greater than y = x + ${constant}?`}
+            </h3>
+            
+            <div className="grid gap-4">
+              {currentQuestion === 0 ? (
+                <>
+                  <button
+                    onClick={() => handleAnswerQuestion('A')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'A' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">x = 1</span>
+                  </button>
+                  <button
+                    onClick={() => handleAnswerQuestion('B')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'B' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">x = 3</span>
+                  </button>
+                  <button
+                    onClick={() => handleAnswerQuestion('C')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'C' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">x = 0</span>
+                  </button>
+                  <button
+                    onClick={() => handleAnswerQuestion('D')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'D' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">There is no value of x</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleAnswerQuestion('A')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'A' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">When x &lt; 2</span>
+                  </button>
+                  <button
+                    onClick={() => handleAnswerQuestion('B')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'B' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">When x = 2</span>
+                  </button>
+                  <button
+                    onClick={() => handleAnswerQuestion('C')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'C' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">When x &gt; 2</span>
+                  </button>
+                  <button
+                    onClick={() => handleAnswerQuestion('D')}
+                    className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${
+                      selectedAnswer === 'D' 
+                        ? 'bg-sky-600 border-sky-400 text-white' 
+                        : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'
+                    }`}
+                  >
+                    <span className="font-medium">Never</span>
+                  </button>
+                </>
+              )}
+            </div>
+            
+            {feedback && (
+              <div className="mt-6 text-center font-bold text-yellow-400 text-xl">
+                {feedback}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

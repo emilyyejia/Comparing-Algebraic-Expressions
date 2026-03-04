@@ -62,12 +62,6 @@ const TableOfValuesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit
       hint: "Check the table for where the purple values become larger than the green ones." 
     },
     { 
-      text: "As x increases by 1, how much more does the first expression's value increase than the second's?", 
-      options: ["1 more", "2 more", "They increase at the same rate"], 
-      correct: currentSet.rateDiff === 1 ? 0 : 1, 
-      hint: `Look at the 'jump' in each column. The first jumps by ${currentSet.expr1.m}, the second by ${currentSet.expr2.m}. What's the difference?` 
-    },
-    { 
       text: `Which expression has the greater y-value for all values of x shown where x < ${currentSet.intersectionX}?`, 
       options: [currentSet.expr1.label, currentSet.expr2.label, "Neither"], 
       correct: 1, 
@@ -77,7 +71,7 @@ const TableOfValuesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit
 
   useEffect(() => { 
     const current = isTableComplete ? 2 + qIndex : 1;
-    onProgressUpdate?.(current, 4); 
+    onProgressUpdate?.(current, 3); 
   }, [isTableComplete, qIndex, onProgressUpdate]);
 
   useEffect(() => {
@@ -113,7 +107,7 @@ const TableOfValuesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit
     }
     else {
       setMistakeCount(prev => prev + 1);
-      setFeedback("Check your table entries.");
+      setFeedback("Try again! Check your calculation.");
       setFeedbackType('error');
     }
   };
@@ -174,7 +168,7 @@ const TableOfValuesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit
         <div className="text-center mb-12">
            <h2 className="text-2xl font-bold text-slate-300 mb-4 leading-relaxed transition-all duration-500 min-h-[4rem]">
              {!isTableComplete 
-               ? <>Compare the two expressions by substituting the <span className="text-sky-300 italic">x</span> values to find the values of <span className="text-sky-300 italic">y</span>.</>
+               ? <>Compare the two expressions by substituting the <span className="text-sky-300">x</span> values to find the values of <span className="text-sky-300">y</span>.</>
                : <>Now use your table to analyze how these two expressions behave.</>
              }
            </h2>
@@ -185,10 +179,10 @@ const TableOfValuesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit
           <div className={`bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-2xl transition-all duration-700 ${isTableComplete ? 'opacity-60 scale-95 origin-left' : ''}`}>
             <table className="w-full border-separate border-spacing-2">
               <thead>
-                <tr className="text-center text-xs uppercase tracking-widest text-slate-500">
-                  <th className="p-4 bg-slate-800 rounded-xl text-sky-300 w-24">x</th>
-                  <th className="p-4 bg-slate-800 rounded-xl text-fuchsia-400 italic">{currentSet.expr1.label}</th>
-                  <th className="p-4 bg-slate-800 rounded-xl text-emerald-400 italic">{currentSet.expr2.label}</th>
+                <tr className="text-center text-lg font-bold">
+                  <th className="p-6 bg-slate-800 rounded-xl text-sky-300 w-24">x</th>
+                  <th className="p-6 bg-slate-800 rounded-xl text-fuchsia-400">{currentSet.expr1.label}</th>
+                  <th className="p-6 bg-slate-800 rounded-xl text-emerald-400">{currentSet.expr2.label}</th>
                 </tr>
               </thead>
               <tbody>
@@ -197,27 +191,27 @@ const TableOfValuesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit
                     <td className="p-4 text-center bg-slate-800/40 rounded-xl font-mono text-2xl font-bold text-slate-300">{row.x}</td>
                     <td className={`p-2 rounded-xl border-2 transition-all ${
                       errorStatus[`${idx}-y1`] ? 'border-red-500 bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 
-                      isTableComplete ? 'border-emerald-500/50 bg-emerald-500/5' :
+                      isTableComplete ? 'border-fuchsia-500/50 bg-fuchsia-500/5' :
                       'border-slate-700'
                     }`}>
                       <input 
                         disabled={isTableComplete} 
                         value={inputs[`${idx}-y1`]||''} 
                         onChange={e=>setInputs({...inputs,[`${idx}-y1`]:e.target.value})} 
-                        className={`w-full bg-transparent text-center font-mono text-2xl outline-none transition-colors ${isTableComplete ? 'text-emerald-400' : 'text-white'}`} 
+                        className={`w-full bg-transparent text-center font-mono text-2xl outline-none transition-colors ${isTableComplete ? 'text-fuchsia-400' : 'text-white'}`} 
                         placeholder="?" 
                       />
                     </td>
                     <td className={`p-2 rounded-xl border-2 transition-all ${
                       errorStatus[`${idx}-y2`] ? 'border-red-500 bg-red-500/10 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 
-                      isTableComplete ? 'border-emerald-500/50 bg-emerald-500/5' :
+                      isTableComplete ? 'border-fuchsia-500/50 bg-fuchsia-500/5' :
                       'border-slate-700'
                     }`}>
                       <input 
                         disabled={isTableComplete} 
                         value={inputs[`${idx}-y2`]||''} 
                         onChange={e=>setInputs({...inputs,[`${idx}-y2`]:e.target.value})} 
-                        className={`w-full bg-transparent text-center font-mono text-2xl outline-none transition-colors ${isTableComplete ? 'text-emerald-400' : 'text-white'}`} 
+                        className={`w-full bg-transparent text-center font-mono text-2xl outline-none transition-colors ${isTableComplete ? 'text-fuchsia-400' : 'text-white'}`} 
                         placeholder="?" 
                       />
                     </td>
@@ -230,8 +224,13 @@ const TableOfValuesLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit
                 onClick={checkTable} 
                 className="w-full mt-8 bg-sky-600 hover:bg-sky-500 py-4 rounded-2xl font-bold text-white transition-all shadow-lg active:scale-95 uppercase tracking-widest text-sm"
               >
-                Check Table
+                Check
               </button>
+            )}
+            {!isTableComplete && feedback && feedbackType === 'error' && (
+              <div className="mt-4 text-center font-bold text-xl text-amber-400">
+                {feedback}
+              </div>
             )}
           </div>
 

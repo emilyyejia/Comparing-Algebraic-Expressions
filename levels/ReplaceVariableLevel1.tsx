@@ -75,7 +75,7 @@ const ReplaceVariableLevel1: React.FC<LevelComponentProps> = ({ onComplete, onEx
     } else {
       setErrorCount(prev => prev + 1);
       setFeedback({ 
-        text: "The variable represents an unknown value. It's the letter in the expression.", 
+        text: "Try again! The variable is the letter in the expression.", 
         type: 'hint' 
       });
     }
@@ -91,7 +91,7 @@ const ReplaceVariableLevel1: React.FC<LevelComponentProps> = ({ onComplete, onEx
       }, 1000);
     } else {
       setErrorCount(prev => prev + 1);
-      setFeedback({ text: "Not quite. To 'substitute' means to replace the variable with the given value.", type: 'error' });
+      setFeedback({ text: "Try again!", type: 'error' });
     }
   };
 
@@ -101,9 +101,12 @@ const ReplaceVariableLevel1: React.FC<LevelComponentProps> = ({ onComplete, onEx
     if (parseInt(inputValue) === correctResult) {
       setFeedback({ text: `Excellent! ${params.a}(${params.v}) + ${params.b} = ${params.a * params.v} + ${params.b} = ${correctResult}`, type: 'success' });
       setIsEvaluationCorrect(true);
+      setTimeout(() => {
+        handleFinishLevel();
+      }, 1500);
     } else {
       setErrorCount(prev => prev + 1);
-      setFeedback({ text: `Try again! Multiply ${params.a} by ${params.v} first, then add ${params.b}.`, type: 'error' });
+      setFeedback({ text: "Try again!", type: 'error' });
     }
   };
 
@@ -156,19 +159,18 @@ const ReplaceVariableLevel1: React.FC<LevelComponentProps> = ({ onComplete, onEx
       <div className="w-full space-y-12 max-w-2xl mt-8">
         {/* Header Section */}
         <div className="text-center mb-12">
-           <h2 className="text-2xl font-bold text-slate-300 mb-4">Find the value of <span className="text-sky-300 italic">{params.a}{params.varName} + {params.b}</span> when <span className="text-sky-300 italic">{params.varName} = {params.v}</span>.</h2>
+           <h2 className="text-2xl font-bold text-slate-300 mb-4">Find the value of <span className="text-sky-300">{params.a}{params.varName} + {params.b}</span> when <span className="text-sky-300">{params.varName} = {params.v}</span>.</h2>
            <div className="h-1 bg-slate-800/50 w-full"></div>
         </div>
 
         {/* Step 1: Identify */}
         <div className="animate-fade-in">
-           <h3 className="text-2xl font-bold mb-4 text-white flex items-center gap-3">
-             <span className="w-10 h-10 bg-sky-600 rounded-full flex items-center justify-center text-sm">1</span>
-             Identify the variable.
+           <h3 className="text-2xl font-bold mb-4 text-white">
+             Step 1. Identify the variable in the expression, and click it.
            </h3>
-           <p className="text-slate-400 mb-6 ml-14">Click the variable in this expression.</p>
+           <p className="text-2xl mb-6 text-white">Click the variable in this expression.</p>
            
-           <div className="flex items-center justify-center gap-2 mb-8 select-none p-10 bg-slate-900 rounded-3xl border border-slate-800 ml-14">
+           <div className="flex items-center justify-center gap-2 mb-8 select-none p-10 bg-slate-900 rounded-3xl border border-slate-800">
               <span onClick={() => handleVariableClick(params.a.toString())} className="text-8xl font-black text-amber-400 hover:scale-110 transition-transform cursor-pointer">{params.a}</span>
               <span onClick={() => handleVariableClick(params.varName)} className="text-8xl font-black text-sky-400 hover:scale-110 transition-transform cursor-pointer">{params.varName}</span>
               <span className="text-8xl font-black text-slate-500 px-4">+</span>
@@ -179,19 +181,17 @@ const ReplaceVariableLevel1: React.FC<LevelComponentProps> = ({ onComplete, onEx
         {/* Step 2: Substitute */}
         {step >= 2 && (
           <div className="animate-fade-in-up border-t border-slate-800 pt-12">
-            <h3 className="text-2xl font-bold mb-4 text-white flex items-center gap-3">
-              <span className="w-10 h-10 bg-sky-600 rounded-full flex items-center justify-center text-sm">2</span>
-              Substitute the variable.
+            <h3 className="text-2xl font-bold mb-4 text-white">
+              Step 2. Substitute the variable.
             </h3>
-            <p className="text-slate-400 mb-8 ml-14">What does it mean to substitute <span className="text-sky-400 font-bold italic">{params.varName} = {params.v}</span> into <span className="text-sky-400 font-bold italic">{params.a}{params.varName} + {params.b}</span>?</p>
-            <div className="grid gap-4 ml-14">
+            <p className="text-2xl mb-8 text-white">What does it mean to substitute <span className="text-sky-400 font-bold">{params.varName} = {params.v}</span> into <span className="text-sky-400 font-bold">{params.a}{params.varName} + {params.b}</span>?</p>
+            <div className="grid gap-4">
               {mcqOptions.map((opt) => (
                 <button
                   key={opt.id}
                   onClick={() => handleMcqSubmit(opt.id)}
-                  className={`p-5 rounded-2xl border-2 text-left transition-all flex items-center gap-4 ${selectedMcq === opt.id ? (opt.id === 'B' ? 'bg-emerald-500/20 border-emerald-500' : 'bg-rose-500/20 border-rose-500') : 'bg-slate-800 border-slate-700 hover:border-slate-500'}`}
+                  className={`p-5 rounded-2xl border-2 text-left transition-all text-lg ${selectedMcq === opt.id ? (opt.id === 'B' ? 'bg-emerald-500/20 border-emerald-500' : 'bg-rose-500/20 border-rose-500') : 'bg-slate-800 border-slate-700 hover:border-slate-500'}`}
                 >
-                  <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm border-2 ${selectedMcq === opt.id ? 'bg-white text-slate-900 border-white' : 'bg-slate-700 text-slate-400'}`}>{opt.id}</span>
                   <span className="font-medium">{opt.text}</span>
                 </button>
               ))}
@@ -202,11 +202,10 @@ const ReplaceVariableLevel1: React.FC<LevelComponentProps> = ({ onComplete, onEx
         {/* Step 3: Evaluate */}
         {step >= 3 && (
           <div className="animate-fade-in-up border-t border-slate-800 pt-12 text-center">
-            <h3 className="text-2xl font-bold mb-4 text-white text-left flex items-center gap-3">
-              <span className="w-10 h-10 bg-sky-600 rounded-full flex items-center justify-center text-sm">3</span>
-              Calculate the result.
+            <h3 className="text-2xl font-bold mb-4 text-white text-left">
+              Step 3. Solve to get the final answer.
             </h3>
-            <div className="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-inner mb-8 mt-6 ml-14">
+            <div className="bg-slate-900 p-10 rounded-3xl border border-slate-800 shadow-inner mb-8 mt-6">
               <div className="flex items-center justify-center gap-4 text-6xl font-mono">
                 <span className="text-amber-400 font-black">{params.a}({params.v})</span>
                 <span className="text-slate-600">+</span>
@@ -216,31 +215,26 @@ const ReplaceVariableLevel1: React.FC<LevelComponentProps> = ({ onComplete, onEx
                   type="number"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (isEvaluationCorrect ? handleFinishLevel() : handleEvaluate())}
+                  onKeyDown={(e) => e.key === 'Enter' && !isEvaluationCorrect && handleEvaluate()}
                   placeholder="?"
                   disabled={isEvaluationCorrect}
                   className={`w-28 bg-slate-950 border-b-4 ${isEvaluationCorrect ? 'border-emerald-500 text-emerald-400' : 'border-sky-500 text-sky-400'} text-center focus:outline-none transition-colors`}
                 />
               </div>
-              <button 
-                onClick={isEvaluationCorrect ? handleFinishLevel : handleEvaluate} 
-                className={`mt-10 ${isEvaluationCorrect ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-sky-600 hover:bg-sky-500'} px-16 py-4 rounded-2xl font-black text-xl shadow-xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 mx-auto`}
-              >
-                {isEvaluationCorrect ? (
-                  <>
-                    <span>Finish Level</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </>
-                ) : 'Evaluate'}
-              </button>
+              {!isEvaluationCorrect && (
+                <button 
+                  onClick={handleEvaluate} 
+                  className="mt-10 bg-sky-600 hover:bg-sky-500 px-16 py-4 rounded-2xl font-black text-xl shadow-xl transition-all uppercase tracking-widest flex items-center justify-center gap-3 mx-auto"
+                >
+                  Check
+                </button>
+              )}
             </div>
           </div>
         )}
 
         {feedback && (
-          <div className={`mt-8 ml-14 p-4 rounded-xl text-center font-bold border-2 ${feedback.type === 'success' ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' : (feedback.type === 'error' ? 'bg-rose-500/10 border-rose-500 text-rose-400' : 'bg-amber-500/10 border-amber-500 text-amber-400')}`}>
+          <div className="mt-8 text-center font-bold text-yellow-400 text-xl">
             {feedback.text}
           </div>
         )}

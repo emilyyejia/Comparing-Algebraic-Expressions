@@ -12,40 +12,39 @@ const ExpressionsAndGraphsLevel3: React.FC<LevelComponentProps> = ({ onComplete,
   const [feedbackType, setFeedbackType] = useState<'success' | 'error' | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
 
-  const DIM = 450; const PAD = 50;
+  const dim = 450; const pad = 50;
   const toPx = (x: number, y: number, xRange: [number, number], yRange: [number, number]) => ({
-    cx: PAD + ((x - xRange[0]) / (xRange[1] - xRange[0])) * (DIM - 2 * PAD),
-    cy: PAD + ((yRange[1] - y) / (yRange[1] - yRange[0])) * (DIM - 2 * PAD),
+    cx: pad + ((x - xRange[0]) / (xRange[1] - xRange[0])) * (dim - 2 * pad),
+    cy: pad + ((yRange[1] - y) / (yRange[1] - yRange[0])) * (dim - 2 * pad),
   });
 
   useEffect(() => {
-    onProgressUpdate?.(phase === 1 ? qIndex + 1 : 3 + qIndex + 1, 6);
+    onProgressUpdate?.(phase === 1 ? qIndex + 1 : 2 + qIndex + 1, 5);
   }, [phase, qIndex, onProgressUpdate]);
 
   useEffect(() => {
     if (partialProgress?.jumpToIndex) {
       const idx = partialProgress.jumpToIndex;
-      if (idx <= 3) {
+      if (idx <= 2) {
         setPhase(1);
         setQIndex(idx - 1);
       } else {
         setPhase(2);
-        setQIndex(idx - 4);
+        setQIndex(idx - 3);
       }
       setFeedback(null);
     }
   }, [partialProgress?.jumpToIndex]);
 
   const phase1Qs = [
-    { text: "1. For the same value of x, which graph is above?", options: ["y = 3x - 2", "y = 3x + 4"], correct: 1, hint: "Compare the y-values for the two lines at a fixed x." },
-    { text: "2. Which expression has the greater value for all x?", options: ["y = 3x + 4", "y = 3x - 2"], correct: 0, hint: "Greater values are higher on the y-axis." },
-    { text: "3. These lines ___ intersect.", options: ["Always", "Never"], correct: 1, hint: "They are parallel!" }
+    { text: "1. For any given x‑value, which line has the greater y‑value?", options: ["y = 3x - 2", "y = 3x + 4"], correct: 1, hint: "Choose a point on the x-axis. Then, compare the y-values." },
+    { text: "2. These lines ___ intersect.", options: ["Always", "Never"], correct: 1, hint: "They are parallel!" }
   ];
 
   const phase2Qs = [
-    { text: "1. Which statement is true based on the graphs?", options: ["They intersect", "y = x²-2 is greater", "Equal at x=0", "y = x²+3 is greater"], correct: 3, hint: "Choose one x-value. Then compare the y-values for the two lines." },
-    { text: "2. Compare values at x=2. Which statement is correct?", options: ["x²-2 > x²+3", "x²+3 > x²-2", "Equal", "Cannot determine"], correct: 1, hint: "At x=2, y=x²+3 is at 7, while y=x²-2 is at 2." },
-    { text: "3. y = x² + 3 is greater than y = x² - 2.", options: ["Sometimes", "Never", "Always"], correct: 2, hint: "The difference is always 5." }
+    { text: "1. For any given x‑value, which graph has the greater y‑value?", options: ["y = x² - 2", "y = x² + 3"], correct: 1, hint: "Choose a point on the x-axis. Then, compare the y-values." },
+    { text: "2. Compare values at x=2. Which statement is correct?", options: ["x²-2 > x²+3", "x²+3 > x²-2", "Equal", "Cannot determine"], correct: 1, hint: "Check the y‑values of both graphs at x = 2. Which is bigger?" },
+    { text: "3. y = x² + 3 is greater than y = x² - 2.", options: ["Sometimes", "Never", "Always"], correct: 2, hint: "Check the y-values of both graphs at different x-values." }
   ];
 
   const handleAnswer = (idx: number) => {
@@ -87,48 +86,43 @@ const ExpressionsAndGraphsLevel3: React.FC<LevelComponentProps> = ({ onComplete,
   return (
     <div className="flex flex-col items-center justify-start min-h-full p-4 bg-slate-950 font-sans max-w-6xl mx-auto pb-24">
       <InstructionButton onClick={() => {}} />
-      <div className="w-full flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
-        <h1 className="text-xl font-bold text-sky-400 uppercase">Level 3: Compare Graphs</h1>
-        <div className="flex gap-2">
-           <div className={`w-8 h-2 rounded-full ${phase >= 1 ? 'bg-sky-500' : 'bg-slate-800'}`} />
-           <div className={`w-8 h-2 rounded-full ${phase >= 2 ? 'bg-sky-500' : 'bg-slate-800'}`} />
-        </div>
-      </div>
 
-      <div className="w-full grid lg:grid-cols-[1fr_350px] gap-8 items-start">
-        <div className="bg-white rounded-3xl p-8 border-4 border-slate-800 flex flex-col items-center">
+      <div className="w-full grid lg:grid-cols-[1fr_350px] gap-8 items-start mt-8">
+        <div className="bg-white rounded-3xl p-8 border-4 border-slate-800 flex flex-col items-center justify-center">
           {phase === 1 ? (
-            <svg width={DIM} height={DIM} viewBox={`0 0 ${DIM} ${DIM}`} className="overflow-visible">
-              <line x1={PAD} y1={DIM/2} x2={DIM-PAD} y2={DIM/2} stroke="#334155" strokeWidth="2" />
-              <line x1={DIM/2} y1={PAD} x2={DIM/2} y2={DIM-PAD} stroke="#334155" strokeWidth="2" />
+            <svg width={dim} height={dim} viewBox={`0 0 ${dim} ${dim}`}>
+              <line x1={pad} y1={dim/2} x2={dim-pad} y2={dim/2} stroke="#334155" strokeWidth="2" />
+              <line x1={dim/2} y1={pad} x2={dim/2} y2={dim-pad} stroke="#334155" strokeWidth="2" />
               {/* Grid Lines */}
               {Array.from({length: 11}).map((_, i) => (
                 <React.Fragment key={i}>
-                  <line x1={PAD + i*(DIM-2*PAD)/10} y1={PAD} x2={PAD + i*(DIM-2*PAD)/10} y2={DIM-PAD} stroke="#f1f5f9" strokeWidth="1" />
-                  <line x1={PAD} y1={PAD + i*(DIM-2*PAD)/10} x2={DIM-PAD} y2={PAD + i*(DIM-2*PAD)/10} stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1={pad + i*(dim-2*pad)/10} y1={pad} x2={pad + i*(dim-2*pad)/10} y2={dim-pad} stroke="#f1f5f9" strokeWidth="1" />
+                  <line x1={pad} y1={pad + i*(dim-2*pad)/10} x2={dim-pad} y2={pad + i*(dim-2*pad)/10} stroke="#f1f5f9" strokeWidth="1" />
                 </React.Fragment>
               ))}
-              <line x1={toPx(-2,-2,[-4,4],[-10,20]).cx} y1={toPx(-2,-2,[-4,4],[-10,20]).cy} x2={toPx(4,16,[-4,4],[-10,20]).cx} y2={toPx(4,16,[-4,4],[-10,20]).cy} stroke="#3b82f6" strokeWidth="4" />
-              <line x1={toPx(-2,-8,[-4,4],[-10,20]).cx} y1={toPx(-2,-8,[-4,4],[-10,20]).cy} x2={toPx(4,10,[-4,4],[-10,20]).cx} y2={toPx(4,10,[-4,4],[-10,20]).cy} stroke="#f43f5e" strokeWidth="4" />
-              <text x={PAD+25} y={PAD+40} className="fill-blue-600 font-bold text-sm italic">y=3x+4</text>
-              <text x={DIM-PAD-100} y={DIM-PAD-40} className="fill-rose-600 font-bold text-sm italic">y=3x-2</text>
+              <line x1={toPx(-2.2,-2.6,[-2.5,2.5],[-4,11]).cx} y1={toPx(-2.2,-2.6,[-2.5,2.5],[-4,11]).cy} x2={toPx(2.2,10.6,[-2.5,2.5],[-4,11]).cx} y2={toPx(2.2,10.6,[-2.5,2.5],[-4,11]).cy} stroke="#3b82f6" strokeWidth="4" />
+              <line x1={toPx(-2.2,-8.6,[-2.5,2.5],[-4,11]).cx} y1={toPx(-2.2,-8.6,[-2.5,2.5],[-4,11]).cy} x2={toPx(2.2,4.6,[-2.5,2.5],[-4,11]).cx} y2={toPx(2.2,4.6,[-2.5,2.5],[-4,11]).cy} stroke="#f43f5e" strokeWidth="4" />
+              <text x={toPx(-1.3,0.1,[-2.5,2.5],[-4,11]).cx - 40} y={toPx(-1.3,0.1,[-2.5,2.5],[-4,11]).cy} className="fill-blue-600 font-bold text-lg italic">y=3x+4</text>
+              <text x={toPx(1.3,1.9,[-2.5,2.5],[-4,11]).cx + 15} y={toPx(1.3,1.9,[-2.5,2.5],[-4,11]).cy + 5} className="fill-rose-600 font-bold text-lg italic">y=3x-2</text>
             </svg>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {[ {l: 'y=x²-2', p: 'M 20 10 Q 110 180 200 10', t: 'Graph 1', c: '#ef4444'}, {l: 'y=x²+3', p: 'M 20 10 Q 110 80 200 10', t: 'Graph 2', c: '#3b82f6'} ].map((g,i) => (
+            <div className="grid grid-cols-2 gap-6">
+              {[ {l: 'y=x²-2', p: 'M 30 15 Q 150 250 270 15', t: 'Graph 1', c: '#ef4444'}, {l: 'y=x²+3', p: 'M 30 15 Q 150 120 270 15', t: 'Graph 2', c: '#3b82f6'} ].map((g,i) => (
                 <div key={i} className="text-center">
-                  <span className="text-slate-800 font-bold text-xs">{g.t}</span>
-                  <svg width={220} height={220} viewBox="0 0 220 220" className="border shadow-sm rounded-lg overflow-visible">
+                  <span className="text-slate-800 font-bold text-sm mb-2 block">{g.t}</span>
+                  <svg width={300} height={300} viewBox="0 0 300 300" className="border-2 border-slate-300 shadow-md rounded-lg">
                     {Array.from({length: 11}).map((_, j) => (
                         <React.Fragment key={j}>
-                            <line x1={j*22} y1={0} x2={j*22} y2={220} stroke="#f1f5f9" />
-                            <line x1={0} y1={j*22} x2={220} y2={j*22} stroke="#f1f5f9" />
+                            <line x1={j*30} y1={0} x2={j*30} y2={300} stroke="#e2e8f0" strokeWidth="1" />
+                            <line x1={0} y1={j*30} x2={300} y2={j*30} stroke="#e2e8f0" strokeWidth="1" />
                         </React.Fragment>
                     ))}
-                    <line x1={0} y1={110} x2={220} y2={110} stroke="#334155" /><line x1={110} y1={0} x2={110} y2={220} stroke="#334155" />
-                    <text x={210} y={120} className="fill-slate-600 text-[12px] font-bold">x</text><text x={120} y={15} className="fill-slate-600 text-[12px] font-bold">y</text>
-                    <path d={g.p} fill="none" stroke={g.c} strokeWidth="4" />
-                    <text x={20} y={30} className="fill-slate-800 font-bold text-sm italic">{g.l}</text>
+                    <line x1={0} y1={150} x2={300} y2={150} stroke="#334155" strokeWidth="2" />
+                    <line x1={150} y1={0} x2={150} y2={300} stroke="#334155" strokeWidth="2" />
+                    <text x={285} y={165} className="fill-slate-700 text-[14px] font-bold">x</text>
+                    <text x={160} y={20} className="fill-slate-700 text-[14px] font-bold">y</text>
+                    <path d={g.p} fill="none" stroke={g.c} strokeWidth="5" />
+                    <text x={30} y={40} className="fill-slate-800 font-bold text-base italic">{g.l}</text>
                   </svg>
                 </div>
               ))}
@@ -141,7 +135,6 @@ const ExpressionsAndGraphsLevel3: React.FC<LevelComponentProps> = ({ onComplete,
         </div>
       </div>
       {feedback && <div className={`fixed bottom-24 ${feedbackType === 'success' ? 'bg-emerald-600' : 'bg-rose-600'} px-8 py-3 rounded-full text-white font-bold shadow-xl animate-fade-in`}>{feedback}</div>}
-      <button onClick={onExit} className="fixed bottom-4 left-4 bg-slate-800 hover:bg-slate-700 px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all">Back to Map</button>
     </div>
   );
 };

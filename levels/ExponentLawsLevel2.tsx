@@ -14,7 +14,12 @@ const ExponentLawsLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
   const [feedbackType, setFeedbackType] = useState<'success' | 'hint' | null>(null);
   const [showCompletion, setShowCompletion] = useState(false);
 
-  useEffect(() => { onProgressUpdate?.(phase, 3); }, [phase, onProgressUpdate]);
+  useEffect(() => { 
+    if (onProgressUpdate) {
+      onProgressUpdate(phase, 3);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
 
   const checkSimp = () => {
     const val = inputExp.toLowerCase().replace(/\s/g, '');
@@ -75,7 +80,6 @@ const ExponentLawsLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
 
   return (
     <div className="flex flex-col items-center min-h-full p-8 bg-slate-950 text-xl">
-      <h1 className="text-3xl font-bold text-sky-400 mb-8 uppercase">Compare Exponents</h1>
       <div className="w-full bg-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl space-y-12">
         <div className="flex justify-center gap-12 text-3xl font-mono">
           <div className="bg-slate-800 p-8 rounded-2xl border-2 border-sky-500/30 text-sky-300">{phase === 1 ? "x⁴ ⋅ x²" : phase === 2 ? "(a²)³" : "3x² ⋅ x⁴"}</div>
@@ -90,7 +94,7 @@ const ExponentLawsLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
           </div>
         ) : (
           <div className="text-center space-y-8 animate-fade-in">
-            <h3 className="text-2xl font-bold">{phase === 3 ? "Equivalent?" : "Which is larger?"}</h3>
+            <h3 className="text-2xl font-bold">{phase === 3 ? "2. Equivalent?" : "2. Which is larger?"}</h3>
             <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                {[ {id:'A',t:phase === 3 ? 'Equivalent':'Left is larger'}, {id:'B',t:phase === 3 ? 'Not Equivalent':'Right is larger'}, {id:'C',t:'They are equal'}, {id:'D',t:'Cannot compare'} ].slice(0, phase === 3 ? 2 : 4).map(o => (
                  <button key={o.id} onClick={() => handleComp(o.id)} className={`p-4 rounded-xl border-2 font-bold ${selectedComp === o.id ? 'bg-indigo-600 border-indigo-400' : 'bg-slate-800 border-slate-700 hover:border-slate-600'}`}>{o.t}</button>
@@ -100,7 +104,6 @@ const ExponentLawsLevel2: React.FC<LevelComponentProps> = ({ onComplete, onExit,
         )}
         {feedback && <p className={`text-center font-bold animate-bounce ${feedbackType === 'success' ? 'text-emerald-400' : 'text-amber-400'}`}>{feedback}</p>}
       </div>
-      <button onClick={onExit} className="fixed bottom-4 left-4 bg-slate-800 px-6 py-2 rounded-lg font-bold">Back to Map</button>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import InstructionButton from '../components/InstructionButton';
 import InstructionModal from '../components/InstructionModal';
 import CompletionModal from '../components/CompletionModal';
 
-const PURPLE_PTS = [
+const purplePts = [
   { x: -2, y: -4 },
   { x: -1, y: -2 },
   { x: 0, y: 0 },
@@ -15,7 +15,7 @@ const PURPLE_PTS = [
   { x: 4, y: 8 }
 ];
 
-const GREEN_PTS = [
+const greenPts = [
   { x: -2, y: 1 },
   { x: -1, y: 2 },
   { x: 0, y: 3 },
@@ -42,8 +42,8 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
   const [selectedPairIndex, setSelectedPairIndex] = useState<number | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<'p' | 'g' | null>(null);
   
-  const [shuffledPurple] = useState(() => shuffle(PURPLE_PTS.map((p, i) => ({ p, i }))));
-  const [shuffledGreen] = useState(() => shuffle(GREEN_PTS.map((p, i) => ({ p, i }))));
+  const [shuffledPurple] = useState(() => shuffle(purplePts.map((p, i) => ({ p, i }))));
+  const [shuffledGreen] = useState(() => shuffle(greenPts.map((p, i) => ({ p, i }))));
   
   const [qIndex, setQIndex] = useState(0);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -53,12 +53,12 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
   const [isInstructionOpen, setIsInstructionOpen] = useState(false);
 
   // Constants for Graph UI (Matching Level 1)
-  const DIM = 550;
-  const PAD = 50;
+  const dim = 550;
+  const pad = 50;
   
   const toPx = (x: number, y: number) => ({
-    cx: PAD + ((x + 5) / 10) * (DIM - 2 * PAD),
-    cy: PAD + ((10 - y) / 20) * (DIM - 2 * PAD)
+    cx: pad + ((x + 5) / 10) * (dim - 2 * pad),
+    cy: pad + ((10 - y) / 20) * (dim - 2 * pad)
   });
 
   useEffect(() => {
@@ -99,8 +99,8 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
   const handleDotClick = (pointIndex: number, group: 'p' | 'g') => {
     if (phase !== 'plotting' || selectedPairIndex === null || selectedGroup === null) return;
 
-    const targetPoint = selectedGroup === 'p' ? PURPLE_PTS[selectedPairIndex] : GREEN_PTS[selectedPairIndex];
-    const clickedPoint = group === 'p' ? PURPLE_PTS[pointIndex] : GREEN_PTS[pointIndex];
+    const targetPoint = selectedGroup === 'p' ? purplePts[selectedPairIndex] : greenPts[selectedPairIndex];
+    const clickedPoint = group === 'p' ? purplePts[pointIndex] : greenPts[pointIndex];
 
     if (targetPoint.x === clickedPoint.x && targetPoint.y === clickedPoint.y) {
       if (group === 'p') {
@@ -131,7 +131,7 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
   };
 
   const checkPlottingComplete = (p: Set<number>, g: Set<number>) => {
-    if (p.size === PURPLE_PTS.length && g.size === GREEN_PTS.length) {
+    if (p.size === purplePts.length && g.size === greenPts.length) {
       setFeedback("Great Job! Both lines are plotted.");
       setTimeout(() => {
         setPhase('analysis');
@@ -144,10 +144,10 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
 
   const qs = [
     { 
-      text: "At which value of x do the two expressions have the same y-value?", 
+      text: "At which value of x do the two equations have the same y-value?", 
       options: ["x = 2", "x = 3", "x = 4"], 
       correct: 1,
-      hint: "Find the intersection point where the lines cross."
+      hint: "Look for the point where the two lines cross. What is the x‑value there?"
     },
     { 
       text: "When is y = 2x larger than y = x + 3?", 
@@ -208,16 +208,16 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
         title={phase === 'plotting' ? "Plotting Two Lines" : "Analyzing Intersections"}
       >
         {phase === 'plotting' ? (
-          <p>Plot two equations on the same grid: <span className="text-purple-400 font-bold italic">y = 2x</span> and <span className="text-emerald-400 font-bold italic">y = x + 3</span>. Select an ordered pair from the sidebar, then find its position on the grid.</p>
+          <p>Plot y = 2x and y = x + 3 by clicking ordered pairs to their matching points on the grid.</p>
         ) : (
-          <p>The two lines intersect at a specific point. Answer the questions based on where the lines cross and which one is higher at different values of x.</p>
+          <p>Compare y = 2x and y = x + 3.</p>
         )}
       </InstructionModal>
 
       <div className="w-full text-center py-6 mb-8 border-b border-slate-800">
          <h2 className="text-2xl md:text-3xl font-medium text-slate-200">
            {phase === 'plotting' 
-             ? <span>Plot the lines <span className="text-purple-400 italic">y = 2x</span> and <span className="text-emerald-400 italic">y = x + 3</span></span>
+             ? <span>Plot y = 2x and y = x + 3 by clicking ordered pairs to their matching points on the grid.</span>
              : <span>Analyze the intersection of the two lines</span>}
          </h2>
       </div>
@@ -229,7 +229,7 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
             {phase === 'plotting' ? (
               <>
                 <div>
-                  <h3 className="text-sm font-bold text-purple-400 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">y = 2x</h3>
+                  <h3 className="text-sm font-bold text-purple-400  tracking-widest mb-4 border-b border-slate-800 pb-2">y = 2x</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {shuffledPurple.map((item) => {
                       const isPlaced = placedPurple.has(item.i);
@@ -254,7 +254,7 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">y = x + 3</h3>
+                  <h3 className="text-sm font-bold text-emerald-400 tracking-widest mb-4 border-b border-slate-800 pb-2">y = x + 3</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {shuffledGreen.map((item) => {
                       const isPlaced = placedGreen.has(item.i);
@@ -290,7 +290,6 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
                         onClick={() => handleAns(i)} 
                         className="w-full text-left p-4 bg-slate-800 border-2 border-slate-700 rounded-2xl hover:border-sky-500 transition-all font-medium text-white group"
                       >
-                        <span className="inline-block w-8 h-8 rounded-full bg-slate-700 text-slate-400 group-hover:bg-sky-500 group-hover:text-white text-center leading-8 mr-3 transition-colors font-mono">{String.fromCharCode(65 + i)}</span>
                         {o}
                       </button>
                     ))}
@@ -318,25 +317,25 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
         <div className="flex flex-col items-center">
           <div className="bg-white rounded-[2.5rem] p-12 shadow-2xl relative border-[12px] border-slate-900 group">
             <svg 
-              width={DIM} 
-              height={DIM} 
-              viewBox={`0 0 ${DIM} ${DIM}`} 
+              width={dim} 
+              height={dim} 
+              viewBox={`0 0 ${dim} ${dim}`} 
               className="overflow-visible"
             >
               {/* Grid Lines */}
               {Array.from({ length: 11 }).map((_, i) => (
-                <line key={`h-${i}`} x1={PAD + i * (DIM - 2 * PAD) / 10} y1={PAD} x2={PAD + i * (DIM - 2 * PAD) / 10} y2={DIM - PAD} stroke="#e2e8f0" strokeWidth="1" />
+                <line key={`h-${i}`} x1={pad + i * (dim - 2 * pad) / 10} y1={pad} x2={pad + i * (dim - 2 * pad) / 10} y2={dim - pad} stroke="#e2e8f0" strokeWidth="1" />
               ))}
               {Array.from({ length: 21 }).map((_, i) => (
-                <line key={`v-${i}`} x1={PAD} y1={PAD + i * (DIM - 2 * PAD) / 20} x2={DIM - PAD} y2={PAD + i * (DIM - 2 * PAD) / 20} stroke="#e2e8f0" strokeWidth="1" />
+                <line key={`v-${i}`} x1={pad} y1={pad + i * (dim - 2 * pad) / 20} x2={dim - pad} y2={pad + i * (dim - 2 * pad) / 20} stroke="#e2e8f0" strokeWidth="1" />
               ))}
               
               {/* Main Axes */}
-              <line x1={PAD} y1={DIM / 2} x2={DIM - PAD} y2={DIM / 2} stroke="#1e293b" strokeWidth="3" />
-              <line x1={DIM / 2} y1={PAD} x2={DIM / 2} y2={DIM - PAD} stroke="#1e293b" strokeWidth="3" />
+              <line x1={pad} y1={dim / 2} x2={dim - pad} y2={dim / 2} stroke="#1e293b" strokeWidth="3" />
+              <line x1={dim / 2} y1={pad} x2={dim / 2} y2={dim - pad} stroke="#1e293b" strokeWidth="3" />
               
-              <text x={DIM - PAD + 15} y={DIM / 2 + 5} className="fill-slate-800 font-black italic text-xl">x</text>
-              <text x={DIM / 2} y={PAD - 20} textAnchor="middle" className="fill-slate-800 font-black italic text-2xl">y</text>
+              <text x={dim - pad + 15} y={dim / 2 + 5} className="fill-slate-800 font-black italic text-xl">x</text>
+              <text x={dim / 2} y={pad - 20} textAnchor="middle" className="fill-slate-800 font-black italic text-2xl">y</text>
 
               {/* Connecting Lines (Analysis Phase) */}
               {phase === 'analysis' && (
@@ -353,7 +352,7 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
               {phase === 'plotting' && (
                 <>
                   {/* Purple Dots */}
-                  {PURPLE_PTS.map((pt, i) => {
+                  {purplePts.map((pt, i) => {
                     const px = toPx(pt.x, pt.y);
                     const isPlaced = placedPurple.has(i);
                     const isTarget = selectedGroup === 'p' && selectedPairIndex === i;
@@ -367,7 +366,7 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
                     );
                   })}
                   {/* Green Dots */}
-                  {GREEN_PTS.map((pt, i) => {
+                  {greenPts.map((pt, i) => {
                     const px = toPx(pt.x, pt.y);
                     const isPlaced = placedGreen.has(i);
                     const isTarget = selectedGroup === 'g' && selectedPairIndex === i;
@@ -386,10 +385,10 @@ const ExpressionsAndGraphsLevel2: React.FC<LevelComponentProps> = ({
               {/* Static Analysis Points */}
               {phase === 'analysis' && (
                 <>
-                  {PURPLE_PTS.map((pt, i) => (
+                  {purplePts.map((pt, i) => (
                     <circle key={`p-stat-${i}`} cx={toPx(pt.x, pt.y).cx} cy={toPx(pt.x, pt.y).cy} r={5} className="fill-purple-600 shadow-sm" />
                   ))}
-                  {GREEN_PTS.map((pt, i) => (
+                  {greenPts.map((pt, i) => (
                     <circle key={`g-stat-${i}`} cx={toPx(pt.x, pt.y).cx} cy={toPx(pt.x, pt.y).cy} r={5} className="fill-emerald-600 shadow-sm" />
                   ))}
                 </>

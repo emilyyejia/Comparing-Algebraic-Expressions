@@ -20,6 +20,8 @@ const ExponentLawsLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
   const [showCompletion, setShowCompletion] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackType, setFeedbackType] = useState<'success' | 'hint' | null>(null);
+  const [attempts, setAttempts] = useState(0);
+  const [finalStars, setFinalStars] = useState(3);
 
   useEffect(() => {
     onProgressUpdate?.(1, 1);
@@ -35,13 +37,19 @@ const ExponentLawsLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     setSubmitted(true);
     if (ok) { 
       setFeedbackType('success');
-      setFeedback("Great Job!"); 
-      onComplete(3); 
+      setFeedback("Great Job!");
+      // Calculate stars based on attempts
+      let stars = 3;
+      if (attempts >= 2) stars = 1;
+      else if (attempts >= 1) stars = 2;
+      setFinalStars(stars);
+      onComplete(stars); 
       setTimeout(()=>setShowCompletion(true), 1500); 
     }
     else {
+      setAttempts(prev => prev + 1);
       setFeedbackType('hint');
-      setFeedback("Check items outlined in red.");
+      setFeedback("Try again! Make sure to use the correct exponent rules.");
     }
   };
 
@@ -51,23 +59,24 @@ const ExponentLawsLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
     setShowCompletion(false);
     setFeedback(null);
     setFeedbackType(null);
+    setAttempts(0);
+    setFinalStars(3);
   };
 
-  if (showCompletion) return <CompletionModal stars={3} onReplay={handleReplay} onBackToMap={onExit!} />;
+  if (showCompletion) return <CompletionModal stars={finalStars} onReplay={handleReplay} onBackToMap={onExit!} />;
 
   return (
     <div className="flex flex-col items-center min-h-full p-8 text-white bg-slate-950 font-sans max-w-6xl mx-auto pb-24 text-xl">
-      <h1 className="text-3xl font-bold text-sky-400 mb-8 uppercase tracking-widest">Comparison Mastery</h1>
       <div className="w-full bg-slate-900 rounded-[2.5rem] p-10 border border-slate-800 shadow-2xl">
-        <h2 className="text-2xl font-black mb-10 text-sky-200">#1. Determine whether each pair is equivalent, not equivalent, or cannot be compared.</h2>
+        <h2 className="text-2xl font-black mb-10 text-sky-200">1. Determine whether each pair is equivalent, not equivalent, or cannot be compared.</h2>
         <div className="overflow-hidden rounded-2xl border border-slate-800">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-950 text-slate-500 text-xs font-black uppercase tracking-widest border-b border-slate-800">
+              <tr className="bg-slate-950 text-slate-400 text-base font-bold border-b border-slate-800">
                 <th className="p-6 text-left">Pairs</th>
                 <th>Equivalent</th>
-                <th>Not Equivalent</th>
-                <th>Cannot Compare</th>
+                <th>Not equivalent</th>
+                <th>Cannot compare</th>
               </tr>
             </thead>
             <tbody>
@@ -88,14 +97,13 @@ const ExponentLawsLevel3: React.FC<LevelComponentProps> = ({ onComplete, onExit,
             </tbody>
           </table>
         </div>
-        <button onClick={checkAll} className="block mx-auto mt-12 bg-sky-600 hover:bg-sky-500 px-20 py-5 rounded-2xl font-black text-xl shadow-2xl uppercase tracking-widest transition-all">Check Results</button>
+        <button onClick={checkAll} className="block mx-auto mt-12 bg-sky-600 hover:bg-sky-500 px-20 py-5 rounded-2xl font-black text-xl shadow-2xl uppercase tracking-widest transition-all">Check</button>
         {feedback && (
           <div className={`mt-8 text-center font-bold animate-bounce ${feedbackType === 'success' ? 'text-emerald-400' : 'text-amber-400'}`}>
             {feedback}
           </div>
         )}
       </div>
-      <button onClick={onExit} className="fixed bottom-4 left-4 bg-slate-800 px-6 py-2 rounded-lg font-bold">Back to Map</button>
     </div>
   );
 };
